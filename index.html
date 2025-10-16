@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cardápio de Bebidas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+        body { box-sizing: border-box; }
+        .font-playfair { font-family: 'Playfair Display', serif; }
+        .font-inter { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .category-btn { transition: all 0.3s ease; }
+        .category-btn.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .price-tag { background: linear-gradient(135deg, #1f2937 0%, #374151 100%); }
+        .ingredient-tag { background: rgba(102, 126, 234, 0.1); color: #667eea; }
+        .text-shadow { text-shadow: 2px 2px 4px rgba(0,0,0,0.7); }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); backdrop-filter: blur(5px); }
+        .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 90%; max-height: 90%; border-radius: 15px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+        .close { position: absolute; top: 15px; right: 25px; color: white; font-size: 35px; font-weight: bold; cursor: pointer; z-index: 1001; background: rgba(0,0,0,0.5); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
+        .close:hover { background: rgba(255,255,255,0.2); transform: scale(1.1); }
+        .zoomable { cursor: pointer; transition: all 0.3s ease; }
+        .zoomable:hover { transform: scale(1.05); }
+    </style>
+</head>
+<body class="bg-gray-50 font-inter">
+    <header class="text-white py-16 relative overflow-hidden">
+        <div class="absolute inset-0" style="background-image: url('https://img.cdndsgni.com/preview/10576301.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; filter: blur(5px); transform: scale(1.1);"></div>
+        <div class="absolute inset-0 bg-black bg-opacity-60"></div>
+        <div class="container mx-auto px-6 text-center relative z-10">
+            <h1 class="font-playfair text-5xl md:text-6xl font-bold mb-4 text-shadow">Carta de Bebidas</h1>
+            <p class="text-xl opacity-90 max-w-2xl mx-auto text-shadow">Descubra nossa seleção especial de drinks artesanais, cervejas premium e bebidas refrescantes</p>
+        </div>
+    </header>
+
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-6">
+            <div class="flex justify-center py-4 border-b border-gray-200">
+                <div class="relative w-full max-w-md">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <input type="text" id="searchInput" placeholder="Pesquisar drinks..." class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-full leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm" onkeyup="searchDrinks()">
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap justify-center gap-2 py-4">
+                <button onclick="showCategory('all')" class="category-btn active px-6 py-3 rounded-full font-medium text-sm">Todos</button>
+                <button onclick="showCategory('caipirinhas')" class="category-btn px-6 py-3 rounded-full font-medium text-sm bg-gray-100 text-gray-700 hover:bg-gray-200">Caipirinhas</button>
+                <button onclick="showCategory('especiais')" class="category-btn px-6 py-3 rounded-full font-medium text-sm bg-gray-100 text-gray-700 hover:bg-gray-200">Drinks Especiais</button>
+                <button onclick="showCategory('sem-alcool')" class="category-btn px-6 py-3 rounded-full font-medium text-sm bg-gray-100 text-gray-700 hover:bg-gray-200">Sem Álcool</button>
+                <button onclick="showCategory('cervejas')" class="category-btn px-6 py-3 rounded-full font-medium text-sm bg-gray-100 text-gray-700 hover:bg-gray-200">Cervejas</button>
+                <button onclick="showCategory('outras')" class="category-btn px-6 py-3 rounded-full font-medium text-sm bg-gray-100 text-gray-700 hover:bg-gray-200">Outras Bebidas</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-6 py-12">
+        <section id="caipirinhas" class="category-section mb-16">
+            <h2 class="font-playfair text-4xl font-bold text-gray-800 mb-8 text-center">Caipirinhas & Caipiroskas</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover" data-drink-id="1">
+                    <div class="h-48 overflow-hidden bg-gray-100 flex items-center justify-center">
+                        <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhSZcVbiEXcZlHOM7_JJbTCVxMgaqLNEAxmPBgMnwKU2mIW_XRHrDNfSP4xjZwvvTgDQeD4iEVD06rNTuFn6HH2NkZpUkzJ-_hmXxjnSCuhCbWJeC17RzyAKEL8UQRd3iSlFgJYAxOpIDvIxHuppFHKp0Zbj_phdanTXf2tPsOwHRVF1aJ12RVrCWAMLxeq" alt="Caipiroska com frutas frescas" class="max-w-full max-h-full object-contain zoomable" onclick="openModal(this)" onerror="this.src=''; this.alt='Imagem não disponível'; this.style.display='none';">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="font-playfair text-2xl font-semibold text-gray-800">Caipiroska</h3>
+                            <span class="price-tag text-white px-4 py-2 rounded-full font-semibold">R$ 16,90</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Vodka premium em diversos sabores</p>
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <span class="ingredient-tag px-3 py-1 rounded-full text-sm font-medium">Vodka</span>
+                        </div>
+                        <div class="text-sm text-gray-500">
+                            <strong>Sabores:</strong> Kiwi, Morango, Kiwi c/ Morango, Limão, Limão c/ Tangerina, Abacaxi c/ Hortelã
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="imageModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+
+    <footer class="gradient-bg text-white py-12">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-lg opacity-90">Desfrute com moderação • Bebidas alcoólicas não devem ser consumidas por menores de 18 anos</p>
+        </div>
+    </footer>
+
+    <script>
+        function showCategory(category) {
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+            });
+            
+            event.target.classList.add('active');
+            event.target.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+            
+            document.querySelectorAll('.category-section').forEach(section => {
+                section.style.display = category === 'all' ? 'block' : 'none';
+            });
+            
+            if (category !== 'all') {
+                const targetSection = document.getElementById(category);
+                if (targetSection) targetSection.style.display = 'block';
+            }
+        }
+
+        function searchDrinks() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const allCards = document.querySelectorAll('.card-hover');
+            
+            allCards.forEach(card => {
+                if (searchTerm === '') {
+                    card.style.display = 'block';
+                    return;
+                }
+                
+                const drinkName = card.querySelector('h3').textContent.toLowerCase();
+                const description = card.querySelector('p').textContent.toLowerCase();
+                const ingredients = Array.from(card.querySelectorAll('.ingredient-tag')).map(tag => tag.textContent.toLowerCase()).join(' ');
+                
+                card.style.display = (drinkName.includes(searchTerm) || description.includes(searchTerm) || ingredients.includes(searchTerm)) ? 'block' : 'none';
+            });
+        }
+
+        function openModal(img) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modal.style.display = 'block';
+            modalImg.src = img.src;
+            modalImg.alt = img.alt;
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        document.getElementById('imageModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            showCategory('all');
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f80c3e71d07263',t:'MTc2MDYyMjg2My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+<div class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover" data-drink-id="2">
+    <div class="h-48 overflow-hidden bg-gray-100 flex items-center justify-center">
+        <img src="URL_DA_IMAGEM" alt="Descrição" class="max-w-full max-h-full object-contain zoomable" onclick="openModal(this)">
+    </div>
+    <div class="p-6">
+        <div class="flex justify-between items-start mb-4">
+            <h3 class="font-playfair text-2xl font-semibold text-gray-800">NOME_DO_DRINK</h3>
+            <span class="price-tag text-white px-4 py-2 rounded-full font-semibold">PREÇO</span>
+        </div>
+        <p class="text-gray-600 mb-4">DESCRIÇÃO</p>
+    </div>
+</div>
